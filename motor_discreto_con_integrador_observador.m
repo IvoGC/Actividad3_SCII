@@ -1,9 +1,9 @@
 clc; clear ; close all
 %{
 ---------------------------------------------------------------------------
-Implementar un sistema en variables de estado que controle el ·ngulo del motor, para
-consignas de pi/2 y ñpi/2 cambiando cada 500 milisegundos y que el TL de 1,5 10-3
-aparece sÛlo para pi/2, para ñpi/2 es nulo. Hallar el valor de integraciÛn
+Implementar un sistema en variables de estado que controle el √°ngulo del motor, para
+consignas de pi/2 y ‚Äìpi/2 cambiando cada 500 milisegundos y que el TL de 1,5 10-3
+aparece s√≥lo para pi/2, para ‚Äìpi/2 es nulo. Hallar el valor de integraci√≥n
 Euler adecuado.
 ---------------------------------------------------------------------------
 %}
@@ -57,7 +57,7 @@ Ka=dlqr(Aa,Ba,Q,R);
 K_i=-Ka(4); K=Ka(1:3);
 
 Qo=diag([1 1 1/1000]); Ro=10;
-Ko=dlqr(Ao,Bo,Qo,Ro);
+Ko=lqr(Ao,Bo,Qo,Ro); %fijate as√≠
 
 
 %implementacion de funciones a usar
@@ -103,7 +103,7 @@ TL=torq/2*square(2*pi*t/periodo)+torq/2;%Funcion torque que varia entre 0 y 1.15
 % 
 % figure(1);hold on;
 % subplot(2,2,1);plot(t,X(1,:),'r');grid on; title('Corriente ia');hold on;
-% subplot(2,2,2);plot(t,X(3,:),'g');grid on;title('¡ngulo tita');hold on;
+% subplot(2,2,2);plot(t,X(3,:),'g');grid on;title('√Ångulo tita');hold on;
 % subplot(2,2,3);plot(t,X(2,:),'c');grid on;title('velocidad angular');hold on;
-% subplot(2,2,4);plot(t,u,'k');grid on;title('AcciÛn de control');xlabel('Tiempo en Seg.');hold on;
+% subplot(2,2,4);plot(t,u,'k');grid on;title('Acci√≥n de control');xlabel('Tiempo en Seg.');hold on;
 
