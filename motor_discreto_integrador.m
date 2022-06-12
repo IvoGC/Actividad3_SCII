@@ -52,10 +52,12 @@ Ka=dlqr(Aa,Ba,Q,R);
 K_i=-Ka(4); K=Ka(1:3);
 
 %ITERACION X=[ia ; w ; tita ];
+
 X=zeros(3,round(tm/dt));
-X(:,1)=[0,0,0]; ref=pi; t=0;
-ia=X(1); tita=X(3) ; wr=X(2); Vh=tm/dt;h=dt;u=[];i=1;u_k(1)=0;
-Ve(1)=0; Xf=[0 0 0];
+X(:,1)=[0,0,0]; 
+ia=X(1); tita=X(3) ; wr=X(2); 
+Vh=tm/dt;h=dt;u=[];i=1;u_k(1)=0; ref=pi; 
+Ve(1)=0; Xf=[0 0 0]; t=0;
 for ki=1:KMAX
     %t=[t ki*tm];
     Ve(ki+1)=Ve(ki)+ref-C*Xf';
