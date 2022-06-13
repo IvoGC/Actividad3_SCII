@@ -1,9 +1,9 @@
 clc; clear ; close all
 %{
 ---------------------------------------------------------------------------
-Implementar un sistema en variables de estado que controle el ·ngulo del motor, para
-consignas de pi/2 y ñpi/2 cambiando cada 500 milisegundos y que el TL de 1,5 10-3
-aparece sÛlo para pi/2, para ñpi/2 es nulo. Hallar el valor de integraciÛn
+Implementar un sistema en variables de estado que controle el √°ngulo del motor, para
+consignas de pi/2 y ‚Äìpi/2 cambiando cada 500 milisegundos y que el TL de 1,5 10-3
+aparece s√≥lo para pi/2, para ‚Äìpi/2 es nulo. Hallar el valor de integraci√≥n
 Euler adecuado.
 ---------------------------------------------------------------------------
 %}
@@ -35,11 +35,12 @@ sys_d=c2d(sys,tm,'zoh');
 Ad=sys_d.a; Bd=sys_d.b;
 
 Ao=Ad'; 
-Bo=C(2,:)'; 
+Bo=C(2,:)';  %Bo es la matriz de entrada del Dual, y tiene dos columnas.
+Bo=C';  
 Co=Bd';
 
 Aa=[Ad zeros(3,1);-C(2,:)*Ad 1];
-Ba=[Bd ; -C(2,:)*Bd];
+Ba=[Bd ; -C(2,:)*Bd]; %Ac√° es correcto porque controlas una sola salida
 Ca=[1 0];
 
 %CONTROLABILIDAD
@@ -116,7 +117,7 @@ u(i)=u_k(ki);
 
 figure(1);hold on;
 subplot(2,2,1);plot(t,X(1,:),'r');grid on; title('Corriente ia');hold on;
-subplot(2,2,2);plot(t,X(3,:),'g');grid on;title('¡ngulo tita');hold on;
+subplot(2,2,2);plot(t,X(3,:),'g');grid on;title('√Ångulo tita');hold on;
 subplot(2,2,3);plot(t,X(2,:),'c');grid on;title('velocidad angular');hold on;
-subplot(2,2,4);plot(t,u,'k');grid on;title('AcciÛn de control');xlabel('Tiempo en Seg.');hold on;
+subplot(2,2,4);plot(t,u,'k');grid on;title('Acci√≥n de control');xlabel('Tiempo en Seg.');hold on;
 
