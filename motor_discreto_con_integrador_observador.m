@@ -18,7 +18,7 @@ Km = 7.53*10^-3;
 tm=1e-3; tf=2;
 %deltat=1*10^-5 ;
 dt=tm/10;
-KMAX=tf/tm;
+KMAX=tf/dt;
 %Tt=tm*KMAX;
 
 %DEFINO MATRICES
@@ -55,11 +55,11 @@ rango_o=rank(Mo)
 %CONTROLADOR K e Ki
 %para el calculo del mismo se utiliza el metodo LQR para lo cual definimos
 %Q=[ia ; w; tita; Ki];
-Q=diag([1 1/1000 100 0.2]); R=2000;
+Q=diag([1 1/1000 5000 0.2]); R=2000;
 Ka=dlqr(Aa,Ba,Q,R);
 K_i=-Ka(4); K=Ka(1:3);
 
-Qo=diag([1 1 1/1000]); Ro=10;
+Qo=diag([1 1 10]); Ro=[100 , 100 ; 1 , 1000];
 Ko=dlqr(Ao,Bo,Qo,Ro);
 
 
@@ -104,13 +104,13 @@ for ki=1:KMAX
         Xf=X_a+ dt*Xp_a;
         X(:,i+1)=Xf;
         %Xhat_a=Xhat(:,i)';
-        %Xhat_a=[Xhat(1,i) ; Xhat(2,i) ; Xhat(3,i)];
-        Xhat_p=u(i)*B+Ko'*err(1)+Ko'*err(2)+A*Xhat(:,i);
-        Xhatf=Xhat(:,i) + dt*Xhat_p
-                  
+        Xhat_a=[Xhat(1,i) ; Xhat(2,i) ; Xhat(3,i)];
+        Xhat_p=u(i)*B+Ko'*err+A*Xhat_a;
+        Xhatf=Xhat_a + dt*Xhat_p;
+        Xhat(:,i+1)=[Xhatf(1) ; Xhatf(2); Xhatf(3)];         
         i=i+1;
     end
-    Xhat(:,i-1)=Xhatf; 
+    %Xhat(:,i-1)=Xhatf; 
 end
 u(i)=u_k(ki); 
 
