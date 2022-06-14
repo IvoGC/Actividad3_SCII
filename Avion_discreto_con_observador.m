@@ -12,9 +12,9 @@ ambas con alturas iniciales de -500 y 500.
 w=3; a=0.05; b=5; c=100;
 
 % PARAMETROS DE SIMULACION
-tm=1e-2; tf=3.5;
+tm=1e-2; tf=7;
 %deltat=1*10^-5 ;
-dt=tm/20;
+dt=tm/10;
 KMAX=tf/dt;
 %Tt=tm*KMAX;
 
@@ -133,6 +133,65 @@ figure(1);hold on;
 subplot(3,2,1);plot(t,X(1,:),'r');grid on; title('Angulo alfa');hold on;
 subplot(3,2,2);plot(t,X(3,:),'g');grid on;title('Ángulo phi');hold on;
 subplot(3,2,3);plot(t,X(2,:),'c');grid on;title('phi_punto');hold on;
-subplot(3,2,4);plot(t,X(4,:),'r');grid on; title('Altura H');hold on;
+subplot(3,2,4);plot(t,X(4,:),'r');grid on; title('Altura H H_i=100 H_f=-500');hold on;
+subplot(3,2,[5:6]);plot(t,u,'k');grid on;title('Acción de control');xlabel('Tiempo en Seg.');hold on;
+
+%configuracion de parametros de simulacion
+Vh=tm/dt;u=[];i=1;  
+t=0:dt:KMAX*(Vh)*dt;; periodo=1;%[seg]
+%CASO ALTURA INICIAL DE -100 Y ALTURA FINAL DE 500
+H_i=-100; H_f=500; 
+Ref=H_f;
+
+
+%ITERACION 
+ 
+Ve(1)=0; Xf=[0,0,0,0]; u_k(1)=0; Xhatf=[0;0;0;0]; Xhat_a=[0;0;0;0];
+
+X=zeros(4,round(tm/dt));    %X=[ia ; w ; tita ];
+X(:,1)=[0,0,0,H_i];     %condiciones iniciales de X
+%OBSERVADOR
+Xhat=zeros(4,round(tm/dt)); %Xhat=[iahat ; wrhat ; titahat ]
+Xhat(:,1)=[0,0,0,H_i];  %condiciones iniciales de Xhat
+
+for ki=1:KMAX
+    Ve(ki+1)=Ve(ki)-Ref-C(1,:)*Xf';
+    %u_k(ki)=-K*Xf'+K_i*Ve(ki);
+    u_k(ki)=-K*Xhatf+K_i*Ve(ki);
+    Y=C*Xf';
+    Yhat=C*Xhatf;
+    err=Y-Yhat;
+    
+    for kii=1:Vh
+        %X=[alfa phi phi_p h]
+        X_a=X(:,i)';
+        u(i)=u_k(ki);
+        Xp_1=a*(X_a(2)-X_a(1));             %alfa_p
+        Xp_2=X_a(3);                         %phi_p
+        Xp_3= -w^2*(X_a(2)-X_a(1)-b*u(i));  %phi_pp
+        Xp_4= c*X_a(1);                     %h_p
+
+        Xp_a=[Xp_1 , Xp_2 , Xp_3 ,Xp_4];
+        
+        Xf=X_a+ dt*Xp_a;
+        X(:,i+1)=Xf;
+        %Xhat_a=Xhat(:,i)';
+        Xhat_a=[Xhat(1,i) ; Xhat(2,i) ; Xhat(3,i) ;Xhat(4,i)];
+        Xhat_p=u(i)*B+Ko'*err+A*Xhat_a;
+        Xhatf=Xhat_a + dt*Xhat_p;
+        Xhat(:,i+1)=[Xhatf(1) ; Xhatf(2); Xhatf(3); Xhatf(4)];         
+        i=i+1;
+    end 
+end
+u(i)=u_k(ki); 
+
+
+
+
+figure(2);hold on;
+subplot(3,2,1);plot(t,X(1,:),'r');grid on; title('Angulo alfa');hold on;
+subplot(3,2,2);plot(t,X(3,:),'g');grid on;title('Ángulo phi');hold on;
+subplot(3,2,3);plot(t,X(2,:),'c');grid on;title('phi_punto');hold on;
+subplot(3,2,4);plot(t,X(4,:),'r');grid on; title('Altura H H_i=-100 H_f=500');hold on;
 subplot(3,2,[5:6]);plot(t,u,'k');grid on;title('Acción de control');xlabel('Tiempo en Seg.');hold on;
 
