@@ -55,17 +55,19 @@ rango_o=rank(Mo)
 %CONTROLADOR K e Ki
 %para el calculo del mismo se utiliza el metodo LQR para lo cual definimos
 %Q=[ia ; w; tita; Ki];
-Q=diag([1 1/1000 5000 0.2]); R=2000;
+%Q=diag([1 1/1000 5000 0.2]); R=2000;
+Q=diag([1 1/100 500 0.2]); R=2000;
 Ka=dlqr(Aa,Ba,Q,R);
 K_i=-Ka(4); K=Ka(1:3);
 
-Qo=diag([1 1 10]); Ro=[100 , 100 ; 1 , 1000];
+%Qo=diag([1 1 10]); Ro=[100 , 100 ; 1 , 1000];
+Qo=diag([1 1 10]); Ro=[100 , 1 ; 1 , 100];
 Ko=dlqr(Ao,Bo,Qo,Ro);
 
 
 %implementacion de funciones a usar
 Vh=tm/dt;u=[];i=1;  
-dt=tm/100;; t=0:dt:KMAX*(Vh)*dt;; periodo=1;%[seg]
+dt=tm/100;; t=0:dt:KMAX*(Vh)*dt;; periodo=1.5;%[seg]
 torq=1.15*10^-3;
 Ref=pi/2*square(2*pi*t/periodo);%funcion de referencia que varia entre pi/2 y -pi/2
 TL=torq/2*square(2*pi*t/periodo)+torq/2;%Funcion torque que varia entre 0 y 1.15*10^-3
