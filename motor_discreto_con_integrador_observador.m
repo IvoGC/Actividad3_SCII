@@ -1,9 +1,9 @@
 clc; clear 
 %{
 ---------------------------------------------------------------------------
-Implementar un sistema en variables de estado que controle el 醤gulo del motor, para
-consignas de pi/2 y 杙i/2 cambiando cada 500 milisegundos y que el TL de 1,5 10-3
-aparece s髄o para pi/2, para 杙i/2 es nulo. Hallar el valor de integraci髇
+Implementar un sistema en variables de estado que controle el 谩ngulo del motor, para
+consignas de pi/2 y 鈥損i/2 cambiando cada 500 milisegundos y que el TL de 1,5 10-3
+aparece s贸lo para pi/2, para 鈥損i/2 es nulo. Hallar el valor de integraci贸n
 Euler adecuado.
 ---------------------------------------------------------------------------
 %}
@@ -16,14 +16,14 @@ KMAX=tf/tm;
 dt=tm/10; 
 t=0:dt:tf;
 periodo=1;%[seg]
-torq=1.15*10^-3;
+torq=1.15*10^-3; %Cu谩ndo lo usaste?
 Ref=pi/2*square(2*pi*t/periodo);%funcion de referencia que varia entre pi/2 y -pi/2
 TL=torq/2*square(2*pi*t/periodo)+torq/2;%Funcion torque que varia entre 0 y 1.15*10^-3
 Vh=tm/dt;u=[];i=1;  
 
 figure
 subplot(2,1,1);plot(t,Ref,'r');grid on; title('Corriente ia');hold on;
-subplot(2,1,2);plot(t,TL,'g');grid on;title('羘gulo tita');hold on;
+subplot(2,1,2);plot(t,TL,'g');grid on;title('脕ngulo tita');hold on;
 
 
 %DEFINO PARAMETROS
@@ -132,10 +132,10 @@ u(i)=u_k(ki);
 
 figure(2);hold on;
 subplot(2,2,1);plot(t,X(1,:),'r');grid on; title('Corriente ia');hold on;
-subplot(2,2,2);plot(t,X(3,:),'r');grid on;title('羘gulo tita');hold on;
+subplot(2,2,2);plot(t,X(3,:),'r');grid on;title('脕ngulo tita');hold on;
 plot(t,Ref);
 subplot(2,2,3);plot(t,X(2,:),'c');grid on;title('velocidad angular');hold on;
-subplot(2,2,4);plot(t,u,'k');grid on;title('Acci髇 de control');xlabel('Tiempo en Seg.');hold on;
+subplot(2,2,4);plot(t,u,'k');grid on;title('Acci贸n de control');xlabel('Tiempo en Seg.');hold on;
 % figure(3);hold on;
-% plot(t(1:length(u_k)),u_k,'k');grid on;title('Acci髇 de control');xlabel('Tiempo en Seg.');hold on;
+% plot(t(1:length(u_k)),u_k,'k');grid on;title('Acci贸n de control');xlabel('Tiempo en Seg.');hold on;
 
