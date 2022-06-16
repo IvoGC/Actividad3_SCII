@@ -108,7 +108,7 @@ for ki=1:KMAX
         u(i)=u_k(ki);
         
         Xp_1=-RA/LAA*X_a(1)-(Km/LAA)*X_a(2)+(1/LAA)*u(i);   %ia_p
-        Xp_2=(Ki_par/J)*X_a(1)-(Bm/J)*X_a(2);               %w_p 
+        Xp_2=(Ki_par/J)*X_a(1)-(Bm/J)*X_a(2) -1/J*TL(i);               %w_p 
         Xp_3= X_a(2);                                       %tita_p
 
         Xp_a=[Xp_1 , Xp_2 , Xp_3];
@@ -132,7 +132,7 @@ u(i)=u_k(ki);
 
 figure(2);hold on;
 subplot(2,2,1);plot(t,X(1,:),'r');grid on; title('Corriente ia');hold on;
-subplot(2,2,2);plot(t,X(3,:),'r');grid on;title('Ángulo tita');hold on;
+subplot(2,2,2);plot(t,X(3,:),'g');grid on;title('Ángulo tita');hold on;
 plot(t,Ref);
 subplot(2,2,3);plot(t,X(2,:),'c');grid on;title('velocidad angular');hold on;
 subplot(2,2,4);plot(t,u,'k');grid on;title('Acción de control');xlabel('Tiempo en Seg.');hold on;
