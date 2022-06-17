@@ -10,9 +10,7 @@ Euler adecuado.
 %implementacion de funciones a usar
 % PARAMETROS DE SIMULACION
 tm=1e-4; tf=2;
-%deltat=1*10^-5 ;
 KMAX=tf/tm;
-%Tt=tm*KMAX;
 dt=tm/10; 
 t=0:dt:tf;
 periodo=1;%[seg]
@@ -39,8 +37,8 @@ Km = 7.53*10^-3;
 A=[-RA/LAA -Km/LAA  0  ; Ki_par/J -Bm/J 0; 0 1 0 ];
 B=[1/LAA; 0; 0];
 C=[0 1 0; 0 0 1];
-%C=[ 0 0 1];
 D=[0];
+
 %Dejamos explicitas las matrices del sistema dual que es el "observado"
 sys=ss(A,B,C,D);
 sys_d=c2d(sys,tm,'zoh');
@@ -50,7 +48,6 @@ Bd=sys_d.b;
 Cd=sys_d.c;
 
 Ao=Ad'; 
-%Bo=C(2,:)';
 Bo=Cd';
 Co=Bd';
 
@@ -79,25 +76,19 @@ K_i=-Ka(4); K=Ka(1:3);
 %Qo=diag([1 1 10]); Ro=[100 , 100 ; 1 , 1000];
 Qo=1e0*(diag([1 1 1])); Ro=1e3*([1 , 0 ; 0 , 1]);
 Ko=dlqr(Ao,Bo,Qo,Ro);
-%Ko=place(Ao,Bo,[0.999999 0.99998 0.99997]);
 
-
-Referencia=pi/2;
-%ITERACION 
- 
-Ve=0; Xf=[0 0 0]; u_k(1)=0; 
-Ref1(1)=0;
+%ITERACION  
+Ve=0; u_k(1)=0; 
 X=zeros(3,round(tf/dt));    %X=[ia ; w ; tita ];
 X(:,1)=[0;0;0];     %condiciones iniciales de X
 err=0;
 x_int=[0 0 0];
-%Xhat=zeros(3,round(tf/dt)); %Xhat=[iahat ; wrhat ; titahat ]
 Xhat=[0;0;0];  %condiciones iniciales de Xhat
-Up(1)=0;
+
 for ki=1:KMAX
 
     u_k(ki)=-K*Xhat+K_i*Ve;
-    %u_k(ki)=-K*Xf'+K_i*Ve;
+    %u_k(ki)=-K*x_int'+K_i*Ve;
     Y=C*x_int';
     
     zona_m=0.5;
@@ -128,8 +119,8 @@ for ki=1:KMAX
         Xp_2=(Ki_par/J)*X_a(1)-(Bm/J)*X_a(2) -(1/J)*TL(i);    %w_p 
         Xp_3= X_a(2);                                       %tita_p
         Xp_a=[Xp_1 , Xp_2 , Xp_3];
-        Xf=X_a+ dt*Xp_a;
-        X(:,i+1)=Xf;     
+        X(:,i+1)=X_a+ dt*Xp_a;
+             
         i=i+1;
     end
     %observador
@@ -142,14 +133,14 @@ end
 u(i)=u_k(ki); 
 
 
-%  figure(2);hold on;
-% subplot(2,2,1);plot(t,X(1,:),'g');grid on; title('Corriente ia');hold on;
-% subplot(2,2,2);plot(t,X(3,:),'r');grid on;title('聲gulo tita');hold on;
-% plot(t,Ref,'k');
-% subplot(2,2,3);plot(t,X(2,:),'c');grid on;title('velocidad angular');hold on;
-% subplot(2,2,4);plot(t,u);grid on;title('Acci鏮 de control');xlabel('Tiempo en Seg.');hold on;
-
  figure(2);hold on;
-subplot(2,2,[1:2]);plot(t,X(3,:),'r');grid on;title('聲gulo tita');hold on;
+subplot(2,2,1);plot(t,X(1,:),'g');grid on; title('Corriente ia');hold on;
+subplot(2,2,2);plot(t,X(3,:),'r');grid on;title('聲gulo tita');hold on;
 plot(t,Ref,'k');
-subplot(2,2,[3:4]);plot(t,u);grid on;title('Acci鏮 de control');xlabel('Tiempo en Seg.');hold on;
+subplot(2,2,3);plot(t,X(2,:),'c');grid on;title('velocidad angular');hold on;
+subplot(2,2,4);plot(t,u);grid on;title('Acci鏮 de control');xlabel('Tiempo en Seg.');hold on;
+
+%  figure(2);hold on;
+% subplot(2,2,[1:2]);plot(t,X(3,:),'r');grid on;title('聲gulo tita');hold on;
+% plot(t,Ref,'k');
+% subplot(2,2,[3:4]);plot(t,u);grid on;title('Acci鏮 de control');xlabel('Tiempo en Seg.');hold on;

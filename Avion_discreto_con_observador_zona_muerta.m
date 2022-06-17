@@ -68,7 +68,7 @@ Ko=dlqr(Ao,Bo,Qo,Ro);
 %ITERACION 
 Ve=0; u_k(1)=0; 
 X=zeros(4,round(tf/dt));    %X=[alfa phi phi_p h]
-X(:,1)=[0;0;0;-500];
+X(:,1)=[0;0;0;H_inicial];
 err=0; Xhat=[0;0;0;0];
 x_int=[0 0 0 0]; 
 
