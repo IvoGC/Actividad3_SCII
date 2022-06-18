@@ -10,12 +10,12 @@ ambas con alturas iniciales de -500 y 500.
 %}
 %implementacion de funciones a usar
 % PARAMETROS DE SIMULACION
-tm=1e-3; tf=70;
+tm=1e-3; tf=80;
 KMAX=tf/tm;
 dt=tm/10; 
 t=0:dt:tf;
-Referencia=+100;
-H_inicial=+500;
+Referencia=100;
+H_inicial=-500;
 Ref=Referencia*ones(1,round(tf/dt)+1);
 Vh=tm/dt;u=[];i=1;
 
@@ -54,7 +54,7 @@ rango_o=rank(Mo)
 % en este caso vamos a utilizar LQR
 %[alfa phi phi_p h K_i]
 %Q=1e-3*(diag([1 10 1 1000 0.03])); R=2e-3;
-Q=1e-15*diag([1 1 1/10 1/100000 500]);    R=1;
+Q=1e-13*diag([1 1/10 1 5 20]);    R=200;
 
 Ka=dlqr(Aa,Ba,Q,R);
 K_i=-Ka(5); K=Ka(1:4);
@@ -62,7 +62,7 @@ eig(Aa-Ba*Ka)
 %CONTORLADOR Ko
 
 %Qo=1e0*(diag([1 1 1 1])); Ro=1e0*([1 , 0 ; 0 , 1]);
-Qo=1*diag([1 1 1 1]);    Ro=[1 0; 0 1];
+Qo=1e-10*diag([1 1 1 1]);    Ro=[1 0; 0 1];
 Ko=dlqr(Ao,Bo,Qo,Ro);
 
 %ITERACION 
@@ -73,10 +73,10 @@ err=0; Xhat=[0;0;0;0];
 x_int=[0 0 0 0]; 
 
 for ki=1:KMAX
-    %u_k(ki)=-K*Xhat+K_i*Ve;
-    u_k(ki)=-K*x_int'+K_i*Ve;
+    u_k(ki)=-K*Xhat+K_i*Ve;
+    %u_k(ki)=-K*x_int'+K_i*Ve;
     Y=C*x_int';
-    zona_m=0.5;
+    zona_m=0.008;
     if(u_k(ki)<=zona_m)
        if((u_k(ki)>=-zona_m))
         u_k(ki)=0;
@@ -86,6 +86,7 @@ for ki=1:KMAX
     else
         u_k(ki)=u_k(ki)-zona_m;
     end
+    
     for kii=1:Vh
        X_a=X(:,i)';
        u(i)=u_k(ki);
@@ -94,6 +95,20 @@ for ki=1:KMAX
        Xp_2= X_a(3);                        %phi_p
        Xp_3=-w^2*(X_a(2)-X_a(1)-b*u(i));    %phi_pp
        Xp_4=c*X_a(1);                       %h_p
+       
+%        if(X_a(1)>=1)
+%            if(X_a(1)<=-1)
+%               X_a(1)=-1; 
+%            end             
+%            X_a(1)=1 ;
+%        end
+%        if(X_a(2)>=1)
+%            if(X_a(2)<=-1)
+%               X_a(2)=-1; 
+%            end             
+%            X_a(2)=1 ;
+%        end
+       
        Xp_a=[Xp_1 , Xp_2 , Xp_3 , Xp_4];
        X(:,i+1)=X_a+ dt*Xp_a;
        
