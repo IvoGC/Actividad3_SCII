@@ -1,10 +1,10 @@
 clc; clear ;close all;
 %{
 ---------------------------------------------------------------------------
- Calcular sistema controlador que haga evolucionar al péndulo en el equilibrio estable.
-Objetivo de control: partiendo de una condición inicial nula en el desplazamiento 
-y el ángulo en pi, hacer que el carro se desplace a 10 metros evitando las 
-oscilaciones de la masa m, considerando que es una grúa. Una vez que delta=10
+ Calcular sistema controlador que haga evolucionar al pï¿½ndulo en el equilibrio estable.
+Objetivo de control: partiendo de una condiciï¿½n inicial nula en el desplazamiento 
+y el ï¿½ngulo en pi, hacer que el carro se desplace a 10 metros evitando las 
+oscilaciones de la masa m, considerando que es una grï¿½a. Una vez que delta=10
 modificar a m a un valor 10 veces mayor y volver al origen evitando oscilaciones.
 ---------------------------------------------------------------------------
 %}
@@ -12,7 +12,7 @@ modificar a m a un valor 10 veces mayor y volver al origen evitando oscilaciones
 m = 0.1; F = 0.1; l = 2.6; g = 9.8; M = 0.5; 
 
 % PARAMETROS DE SIMULACION
-tm=1e-3; tf=20;
+tm=1e-3; tf=50;
 KMAX=tf/tm;
 dt=tm/10; 
 t=0:dt:tf;
@@ -71,7 +71,7 @@ rango_o=rank(Mo)
 %CONTROLADOR K e Ki
 % en este caso vamos a utilizar LQR
 %[delta delta_p phi phi_p]
-Q=1e0*(diag([0.1 1000 1000 1/10 0.0005])); R=1e2;
+Q=1e0*(diag([100 100 100 10 0.0005])); R=1e-2;
 %Q=1*diag([.1 1000 1000 .1 .0005]);    R=100;
 Ka=dlqr(Aa,Ba,Q,R);
 K_i=-Ka(5); K=Ka(1:4);
@@ -89,12 +89,12 @@ X=zeros(4,round(tf/dt));    %X=[delta delta_p phi phi_p]
 X(:,1)=[0;0;0;0];           %condiciones iniciales
 err=0; Xhat=[0;0;0;0];
 x_int=[0 0 0 0]; 
-
+Xop=[0 0 pi 0]';
 for ki=1:KMAX
-    %u_k(ki)=-K*Xhat+K_i*Ve;
-    u_k(ki)=-K*x_int'+K_i*Ve;
+    u_k(ki)=-K*(Xhat-Xop)+K_i*Ve;
+%     u_k(ki)=-K*(x_int'-Xop)+K_i*Ve;
     Y=C*x_int';
-    zona_m=5;
+    zona_m=0*5;
     if(u_k(ki)<=zona_m)
        if((u_k(ki)>=-zona_m))
         u_k(ki)=0;
@@ -114,14 +114,13 @@ for ki=1:KMAX
         Xp_3=X_a(4);
         Xp_4=-F*X_a(2)/(M*l)-g*(M+masa(i))*(X_a(3)-pi)/(M*l)-u(i)/(M*l);
         Xp_a=[Xp_1 , Xp_2 , Xp_3, Xp_4];
-        X(:,i+1)=X_a+ dt*Xp_a;
-                
+        X(:,i+1)=X_a+ dt*Xp_a;                
         i=i+1;
     end
     %observador
     Yhat=C*Xhat;
     err=Y-Yhat;
-    Xhat=u(i-1)*Bd+Ko'*err+Ad*Xhat;
+    Xhat=u(i-1)*Bd+Ko'*err+Ad*(Xhat-Xop);
     Ve=Ve+Ref(i)-C(1,:)*x_int';
     x_int=X(:,i)';
 end
@@ -134,13 +133,11 @@ u(i)=u_k(ki);
 % subplot(3,2,2);plot(t,X(2,:),'r');grid on;title('Delta Punto');hold on;
 % subplot(3,2,3);plot(t,X(3,:),'c');grid on;title('Angulo phi');hold on;
 % subplot(3,2,4);plot(t,X(4,:),'r');grid on;title('phi punto');hold on;
-% subplot(3,2,[5:6]);plot(t,u);grid on;title('Acción de control');xlabel('Tiempo en Seg.');hold on;
+% subplot(3,2,[5:6]);plot(t,u);grid on;title('Acciï¿½n de control');xlabel('Tiempo en Seg.');hold on;
 
 
  figure(2);hold on;
 subplot(3,2,[1:2]);plot(t,X(1,:),'r');grid on; title('Distancia Delta');hold on;
 plot(t,Ref,'k');
 subplot(3,2,[3:4]);plot(t,X(3,:),'c');grid on;title('Angulo phi');hold on;
-subplot(3,2,[5:6]);plot(t,u);grid on;title('Acción de control');xlabel('Tiempo en Seg.');hold on;
-
-
+subplot(3,2,[5:6]);plot(t,u);grid on;title('Acciï¿½n de control');xlabel('Tiempo en Seg.');hold on;
