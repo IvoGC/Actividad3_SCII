@@ -1,4 +1,4 @@
-clc; clear ;
+clc; clear ;close all;
 %{
 ---------------------------------------------------------------------------
  Calcular sistema controlador que haga evolucionar al péndulo en el equilibrio estable.
@@ -12,7 +12,7 @@ modificar a m a un valor 10 veces mayor y volver al origen evitando oscilaciones
 m = 0.1; F = 0.1; l = 2.6; g = 9.8; M = 0.5; 
 
 % PARAMETROS DE SIMULACION
-tm=1e-3; tf=15;
+tm=1e-3; tf=20;
 KMAX=tf/tm;
 dt=tm/10; 
 t=0:dt:tf;
@@ -33,9 +33,9 @@ for j=1:1:n+1
     end
 end
 
-% figure
-% subplot(2,1,1);plot(t,Ref,'g');title('Referencia');
-% subplot(2,1,2);plot(t,masa,'r');title('Masa');
+figure
+subplot(2,1,1);plot(t,Ref,'g');title('Referencia');
+subplot(2,1,2);plot(t,masa,'r');title('Masa');
 
 %DEFINO MATRICES
 %X=[delta delta_p phi phi_p]
@@ -71,13 +71,15 @@ rango_o=rank(Mo)
 %CONTROLADOR K e Ki
 % en este caso vamos a utilizar LQR
 %[delta delta_p phi phi_p]
-Q=1e0*(diag([1 10 150 1000 30])); R=2e3;
+Q=1e0*(diag([0.1 1000 1000 1/10 0.0005])); R=1e2;
+%Q=1*diag([.1 1000 1000 .1 .0005]);    R=100;
 Ka=dlqr(Aa,Ba,Q,R);
 K_i=-Ka(5); K=Ka(1:4);
 %eig(Aa-Ba*Ka)
 
 %CONTORLADOR Ko
-Qo=1e0*(diag([1 1 1 1])); Ro=1e0*([1 , 0 ; 0 , 1]);
+%Qo=1e0*(diag([1 1 1 1])); Ro=1e0*([1 , 0 ; 0 , 1]);
+Qo=1e4*diag([1 10000 1000 .001]);    Ro=[1 0; 0 1];
 Ko=dlqr(Ao,Bo,Qo,Ro);
 %eig(Ao-Bo*Ko)
 
@@ -92,7 +94,7 @@ for ki=1:KMAX
     %u_k(ki)=-K*Xhat+K_i*Ve;
     u_k(ki)=-K*x_int'+K_i*Ve;
     Y=C*x_int';
-    zona_m=0.5;
+    zona_m=5;
     if(u_k(ki)<=zona_m)
        if((u_k(ki)>=-zona_m))
         u_k(ki)=0;
